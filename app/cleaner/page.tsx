@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Navbar from '@/components/Navbar'
 import { useSession } from 'next-auth/react'
-import { redirect, useSearchParams } from 'next/navigation'
+import { redirect } from 'next/navigation'
 
 interface Task {
   id: string
@@ -28,7 +28,6 @@ interface StripeConnectStatus {
 
 export default function CleanerDashboard() {
   const { data: session, status } = useSession()
-  const searchParams = useSearchParams()
   const [tasks, setTasks] = useState<Task[]>([])
   const [stripeStatus, setStripeStatus] = useState<StripeConnectStatus | null>(null)
   const [loading, setLoading] = useState(true)
@@ -38,11 +37,11 @@ export default function CleanerDashboard() {
     fetchTasks()
     fetchStripeStatus()
     
-    // Show success message if returning from Stripe
-    if (searchParams.get('success') === 'true') {
+    // Check for success in URL manually without useSearchParams
+    if (typeof window !== 'undefined' && window.location.search.includes('success=true')) {
       alert('Stripe account connected successfully!')
     }
-  }, [searchParams])
+  }, [])
 
   const fetchTasks = async () => {
     try {

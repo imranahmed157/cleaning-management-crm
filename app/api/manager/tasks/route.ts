@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { TaskStatus } from '@prisma/client'
 
 // GET /api/manager/tasks - List all pending tasks
 export async function GET(request: NextRequest) {
@@ -11,15 +12,12 @@ export async function GET(request: NextRequest) {
     }
 
     const { searchParams } = new URL(request.url)
-    const status = searchParams.get('status') || 'PENDING_REVIEW'
+    const statusParam = searchParams.get('status') || 'PENDING_REVIEW'
 
-      const where: { status?: string } = {}
-      if (status) {
-        where.status = status
-      }
-
-      const tasks = await prisma.task.findMany({
-        where,
+    const tasks = await prisma.task.findMany({
+      where: {
+        status: statusParam as TaskStatus,
+      },
       include: {
         cleaner: {
           select: {
