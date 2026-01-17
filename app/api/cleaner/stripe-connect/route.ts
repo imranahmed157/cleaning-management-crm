@@ -1,10 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { stripe } from '@/lib/stripe'
 
 // POST /api/cleaner/stripe-connect - Create Stripe Connect onboarding link
-export async function POST(request: NextRequest) {
+export async function POST() {
   try {
     const session = await auth()
     if (!session || (session.user.role !== 'CLEANER' && session.user.role !== 'ADMIN')) {
@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
 }
 
 // GET /api/cleaner/stripe-connect - Check Stripe Connect status
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const session = await auth()
     if (!session || (session.user.role !== 'CLEANER' && session.user.role !== 'ADMIN')) {

@@ -5,7 +5,7 @@ import { sendEmail, generateInvitationEmail } from '@/lib/email'
 import crypto from 'crypto'
 
 // GET /api/admin/users - List all users
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const session = await auth()
     if (!session || session.user.role !== 'ADMIN') {

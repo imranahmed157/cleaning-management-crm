@@ -13,10 +13,13 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const status = searchParams.get('status') || 'PENDING_REVIEW'
 
-    const tasks = await prisma.task.findMany({
-      where: {
-        status: status as any,
-      },
+      const where: { status?: string } = {}
+      if (status) {
+        where.status = status
+      }
+
+      const tasks = await prisma.task.findMany({
+        where,
       include: {
         cleaner: {
           select: {

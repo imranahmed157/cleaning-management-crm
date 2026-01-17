@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { stripe } from '@/lib/stripe'
 
 // GET /api/stripe/customers - List all Stripe customers for dropdown
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const session = await auth()
     if (!session || (session.user.role !== 'MANAGER' && session.user.role !== 'ADMIN')) {

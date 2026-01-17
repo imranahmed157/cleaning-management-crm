@@ -113,15 +113,15 @@ export async function POST(
         subject: emailContent.subject,
         html: emailContent.html,
       })
-    } catch (stripeError: any) {
+    } catch (stripeError) {
+      const errorMessage = stripeError instanceof Error ? stripeError.message : 'Unknown error'
       console.error('Stripe error:', stripeError)
       transactionStatus = 'FAILED'
 
       // Send failure email to manager/admin
       const emailContent = generatePaymentFailedEmail(
         taskId.substring(0, 8),
-        stripeError.message,
-        'manager'
+        errorMessage
       )
       await sendEmail({
         to: session.user.email,

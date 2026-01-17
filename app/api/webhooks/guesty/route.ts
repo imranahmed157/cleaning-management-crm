@@ -19,7 +19,6 @@ export async function POST(request: NextRequest) {
       taskId,
       propertyName,
       cleanerEmail,
-      cleanerName,
       completedAt,
       status,
     } = body

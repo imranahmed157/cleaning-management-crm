@@ -143,7 +143,7 @@ export function generatePaymentApprovedEmail(name: string, amount: number, taskI
   }
 }
 
-export function generatePaymentFailedEmail(taskId: string, error: string, recipientRole: string) {
+export function generatePaymentFailedEmail(taskId: string, error: string) {
   return {
     subject: `Payment Failed - Task #${taskId}`,
     html: `
