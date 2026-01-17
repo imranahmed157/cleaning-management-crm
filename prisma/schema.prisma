@@ -1,0 +1,98 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  MANAGER
+  CLEANER
+}
+
+enum TaskStatus {
+  PENDING_REVIEW
+  APPROVED
+  DENIED
+  PAID
+}
+
+enum TransactionStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
+model User {
+  id                       String        @id @default(uuid())
+  email                    String        @unique
+  name                     String
+  passwordHash             String?       @map("password_hash")
+  role                     Role
+  stripeConnectedAccountId String?       @map("stripe_connected_account_id")
+  isActive                 Boolean       @default(true) @map("is_active")
+  createdAt                DateTime      @default(now()) @map("created_at")
+  updatedAt                DateTime      @updatedAt @map("updated_at")
+  
+  tasksAsCleaner           Task[]        @relation("CleanerTasks")
+  transactionsAsCleaner    Transaction[] @relation("CleanerTransactions")
+  transactionsAsManager    Transaction[] @relation("ManagerTransactions")
+
+  @@map("users")
+}
+
+model Task {
+  id             String       @id @default(uuid())
+  guestyTaskId   String       @unique @map("guesty_task_id")
+  propertyName   String       @map("property_name")
+  cleanerId      String?      @map("cleaner_id")
+  status         TaskStatus   @default(PENDING_REVIEW)
+  completedAt    DateTime?    @map("completed_at")
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
+  
+  cleaner        User?        @relation("CleanerTasks", fields: [cleanerId], references: [id])
+  transactions   Transaction[]
+
+  @@map("tasks")
+}
+
+model Transaction {
+  id                     String            @id @default(uuid())
+  taskId                 String            @map("task_id")
+  guestStripeId          String            @map("guest_stripe_id")
+  guestName              String?           @map("guest_name")
+  cleanerId              String            @map("cleaner_id")
+  managerId              String            @map("manager_id")
+  cleanerFee             Decimal           @map("cleaner_fee") @db.Decimal(10, 2)
+  guestCharge            Decimal           @map("guest_charge") @db.Decimal(10, 2)
+  stripePaymentIntentId  String?           @map("stripe_payment_intent_id")
+  stripeTransferId       String?           @map("stripe_transfer_id")
+  status                 TransactionStatus @default(PENDING)
+  notes                  String?
+  createdAt              DateTime          @default(now()) @map("created_at")
+  updatedAt              DateTime          @updatedAt @map("updated_at")
+  
+  task                   Task              @relation(fields: [taskId], references: [id])
+  cleaner                User              @relation("CleanerTransactions", fields: [cleanerId], references: [id])
+  manager                User              @relation("ManagerTransactions", fields: [managerId], references: [id])
+
+  @@map("transactions")
+}
+
+model InvitationToken {
+  id         String   @id @default(uuid())
+  email      String
+  token      String   @unique
+  expiresAt  DateTime @map("expires_at")
+  used       Boolean  @default(false)
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@map("invitation_tokens")
+}
