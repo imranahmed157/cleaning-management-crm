@@ -47,9 +47,11 @@ npm run dev
 ### Step 6: Test Login
 Open your browser to: http://localhost:3000
 
-Login credentials:
+Default login credentials (⚠️ **CHANGE THESE IN PRODUCTION!**):
 - **Email:** `imranahmed0153@gmail.com`
 - **Password:** `admin123`
+
+> ⚠️ **SECURITY WARNING:** These are default development credentials. Change them immediately in production environments!
 
 ---
 
