@@ -151,12 +151,12 @@ export async function POST(
     await prisma.task.update({
       where: { id: taskId },
       data: {
-        status: transactionStatus === 'COMPLETED' ? 'APPROVED' : 'PENDING_REVIEW',
+        status: transactionStatus === 'CHARGED' ? 'APPROVED' : 'PENDING_REVIEW',
       },
     })
 
     return NextResponse.json({
-      success: transactionStatus === 'COMPLETED',
+      success: transactionStatus === 'CHARGED',
       transaction: {
         id: transaction.id,
         status: transaction.status,
@@ -164,7 +164,7 @@ export async function POST(
         guestCharge: transaction.guestCharge,
       },
       message:
-        transactionStatus === 'COMPLETED'
+        transactionStatus === 'CHARGED'
           ? 'Task approved and payment processed successfully'
           : 'Task approval failed - payment processing error',
     })
