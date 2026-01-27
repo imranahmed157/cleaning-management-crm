@@ -63,8 +63,7 @@ export async function sendEmail({ to, subject, html, from }: EmailOptions) {
 }
 
 export function generateInvitationEmail(name: string, token: string, role: string) {
-  const setupUrl = `${process.env.APP_URL}/auth/setup-password?token=${token}`
-  
+const setupUrl = `${process.env.NEXT_PUBLIC_APP_URL || process.env.APP_URL || 'http://localhost:3000'}/auth/signup?token=${token}`  
   return {
     subject: "You've been invited to Cleaning Management CRM",
     html: `

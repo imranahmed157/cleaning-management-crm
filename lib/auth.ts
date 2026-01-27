@@ -82,3 +82,66 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     strategy: "jwt",
   },
 })
+
+
+// ============================================
+// Permission Helper Functions
+// ============================================
+
+export async function getAuthUser() {
+  const session = await auth();
+  
+  if (!session?.user?.email) {
+    return null;
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { email: session.user.email },
+    select: {
+      id: true,
+      email: true,
+      name: true,
+      role: true,
+      isActive: true,
+    },
+  });
+
+  if (!user || !user.isActive) {
+    return null;
+  }
+
+  return user;
+}
+
+// Permission helpers
+export function canManageUsers(role: string) {
+  return role === 'ADMIN' || role === 'MANAGER';
+}
+
+export function canDeleteUsers(role: string) {
+  return role === 'ADMIN'; // Only admin can delete
+}
+
+export function canManageTransactions(role: string) {
+  return role === 'ADMIN' || role === 'MANAGER';
+}
+
+export function canApprovePayments(role: string) {
+  return role === 'ADMIN' || role === 'MANAGER';
+}
+
+export function canViewAllData(role: string) {
+  return role === 'ADMIN' || role === 'MANAGER';
+}
+
+export function isAdmin(role: string) {
+  return role === 'ADMIN';
+}
+
+export function isManager(role: string) {
+  return role === 'MANAGER';
+}
+
+export function isCleaner(role: string) {
+  return role === 'CLEANER';
+}

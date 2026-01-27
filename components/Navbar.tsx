@@ -1,38 +1,53 @@
-'use client'
+'use client';
 
-import { signOut } from 'next-auth/react'
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { signOut } from 'next-auth/react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 interface NavbarProps {
   user: {
-    name: string
-    email: string
-    role: string
-  }
+    name: string;
+    email: string;
+    role: string;
+  };
 }
 
 export default function Navbar({ user }: NavbarProps) {
-  const pathname = usePathname()
+  const pathname = usePathname();
 
-  const navigation = {
-    ADMIN: [
-      { name: 'Dashboard', href: '/admin' },
-      { name: 'Users', href: '/admin/users' },
-    ],
-    MANAGER: [
-      { name: 'Dashboard', href: '/manager' },
-      { name: 'Tasks', href: '/manager/tasks' },
-      { name: 'Transactions', href: '/manager/transactions' },
-    ],
-    CLEANER: [
-      { name: 'Dashboard', href: '/cleaner' },
-      { name: 'Tasks', href: '/cleaner/tasks' },
-      { name: 'Payments', href: '/cleaner/payments' },
-    ],
-  }
+  // Define navigation based on role
+  const getNavigation = () => {
+    const baseNav = [
+      { name: 'Dashboard', href: '/dashboard', roles: ['ADMIN', 'MANAGER', 'CLEANER'] },
+    ];
 
-  const links = navigation[user.role as keyof typeof navigation] || []
+    const adminManagerNav = [
+      { name: 'Transactions', href: '/dashboard/transactions', roles: ['ADMIN', 'MANAGER'] },
+      { name: 'Clients', href: '/dashboard/clients', roles: ['ADMIN', 'MANAGER'] },
+{ name: 'Invoices', href: '/dashboard/invoices', roles: ['ADMIN', 'MANAGER'] },
+      { name: 'Tasks', href: '/dashboard/tasks', roles: ['ADMIN', 'MANAGER'] },
+      { name: 'Users', href: '/dashboard/users', roles: ['ADMIN', 'MANAGER'] },
+      { name: 'Reports', href: '/dashboard/reports', roles: ['ADMIN', 'MANAGER'] },
+    ];
+
+    const cleanerNav = [
+      { name: 'My Tasks', href: '/dashboard/tasks', roles: ['CLEANER'] },
+      { name: 'My Earnings', href: '/dashboard/earnings', roles: ['CLEANER'] },
+      { name: 'Payments', href: '/dashboard/payments', roles: ['CLEANER'] },
+    ];
+
+    const adminOnlyNav = [
+      { name: 'Settings', href: '/dashboard/settings', roles: ['ADMIN'] },
+    ];
+
+    // Combine all nav items
+    const allNav = [...baseNav, ...adminManagerNav, ...cleanerNav, ...adminOnlyNav];
+
+    // Filter based on user role
+    return allNav.filter((item) => item.roles.includes(user.role));
+  };
+
+  const navigation = getNavigation();
 
   return (
     <nav className="bg-white shadow-md border-b border-gray-200">
@@ -40,10 +55,12 @@ export default function Navbar({ user }: NavbarProps) {
         <div className="flex justify-between h-16">
           <div className="flex">
             <div className="flex-shrink-0 flex items-center">
-              <span className="text-xl font-bold text-blue-600">Cleaning CRM</span>
+              <Link href="/dashboard">
+                <span className="text-xl font-bold text-blue-600">Cleaning CRM</span>
+              </Link>
             </div>
             <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
-              {links.map((link) => (
+              {navigation.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
@@ -63,16 +80,16 @@ export default function Navbar({ user }: NavbarProps) {
               <span className="text-sm text-gray-700 mr-4">
                 {user.name} ({user.role})
               </span>
-              <button
-                onClick={() => signOut({ callbackUrl: '/auth/login' })}
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-              >
-                Sign Out
-              </button>
             </div>
+            <button
+              onClick={() => signOut({ callbackUrl: '/auth/login' })}
+              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+              Sign Out
+            </button>
           </div>
         </div>
       </div>
     </nav>
-  )
+  );
 }
