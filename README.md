@@ -108,6 +108,8 @@ This creates an admin user:
 - Password: `admin123`
 - Role: `ADMIN`
 
+> ⚠️ **SECURITY WARNING:** These are default development credentials. In production, change the admin password immediately after first login or update the seed script with secure credentials.
+
 7. Run the development server:
 ```bash
 npm run dev
