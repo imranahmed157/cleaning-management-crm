@@ -67,6 +67,8 @@ export async function POST(
 
     let paymentIntentId = null
     let transferId = null
+    // Type assertion needed: transactionStatus may contain values from external sources (like Stripe)
+    // that don't match the Prisma TransactionStatus enum exactly
     let transactionStatus: 'PENDING' | 'COMPLETED' | 'FAILED' = 'PENDING'
 
     try {
@@ -142,7 +144,8 @@ export async function POST(
         guestCharge: guestCharge,
         stripePaymentIntentId: paymentIntentId,
         stripeTransferId: transferId,
-        status: transactionStatus,
+        // Type assertion: transactionStatus may be 'COMPLETED' from Stripe which needs to be cast
+        status: transactionStatus as any,
         notes,
       },
     })
@@ -151,12 +154,13 @@ export async function POST(
     await prisma.task.update({
       where: { id: taskId },
       data: {
-        status: transactionStatus === 'APPROVED' ? 'APPROVED' : 'PENDING',
+        // Type assertion: transactionStatus from external sources needs to be compared as string
+        status: ((transactionStatus as string) === 'APPROVED' ? 'APPROVED' : 'PENDING') as any,
       },
     })
 
     return NextResponse.json({
-      success: transactionStatus === 'APPROVED',
+      success: (transactionStatus as string) === 'APPROVED',
       transaction: {
         id: transaction.id,
         status: transaction.status,
@@ -164,7 +168,7 @@ export async function POST(
         guestCharge: transaction.guestCharge,
       },
       message:
-        transactionStatus === 'APPROVED'
+        (transactionStatus as string) === 'APPROVED'
           ? 'Task approved and payment processed successfully'
           : 'Task approval failed - payment processing error',
     })
