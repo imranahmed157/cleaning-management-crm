@@ -132,14 +132,31 @@ export async function POST(
       })
     }
 
+    // Find or create Client with the Stripe customer ID
+    let client = await prisma.client.findUnique({
+      where: { stripeCustomerId: guestStripeId },
+    })
+
+    if (!client) {
+      // Create a new client if one doesn't exist
+      client = await prisma.client.create({
+        data: {
+          name: guestName || 'Unknown',
+          email: `guest_${guestStripeId}@placeholder.com`, // Placeholder email
+          stripeCustomerId: guestStripeId,
+        },
+      })
+    }
+
     // Create transaction record
     const transaction = await prisma.transaction.create({
       data: {
         taskId: task.id,
-        guestStripeId,
+        clientId: client.id,
         guestName: guestName || 'Unknown',
         cleanerId: task.cleaner.id,
         managerId: session.user.id,
+        amount: guestCharge,
         cleanerFee: cleanerFeeNum,
         guestCharge: guestCharge,
         stripePaymentIntentId: paymentIntentId,
