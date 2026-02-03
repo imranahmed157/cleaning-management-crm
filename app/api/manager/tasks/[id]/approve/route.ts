@@ -138,11 +138,27 @@ export async function POST(
     })
 
     if (!client) {
+      // Fetch customer details from Stripe to get real email/name
+      let customerEmail = `stripe_${guestStripeId.substring(guestStripeId.length - 8)}@temp.placeholder`
+      let customerName = guestName || 'Unknown Guest'
+      
+      try {
+        const stripeCustomer = await stripe.customers.retrieve(guestStripeId)
+        if (!stripeCustomer.deleted) {
+          // Use actual customer data from Stripe if available
+          customerEmail = stripeCustomer.email || customerEmail
+          customerName = stripeCustomer.name || guestName || customerName
+        }
+      } catch (stripeError) {
+        console.warn('Could not fetch Stripe customer details:', stripeError)
+        // Fall back to provided guestName or default
+      }
+
       // Create a new client if one doesn't exist
       client = await prisma.client.create({
         data: {
-          name: guestName || 'Unknown',
-          email: `guest_${guestStripeId}@placeholder.com`, // Placeholder email
+          name: customerName,
+          email: customerEmail,
           stripeCustomerId: guestStripeId,
         },
       })
