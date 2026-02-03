@@ -6,7 +6,7 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const role = searchParams.get('role');
 
-    const whereClause = role ? { role } : {};
+    const whereClause = role ? { role: role as 'ADMIN' | 'MANAGER' | 'CLEANER' } : {};
 
     const users = await prisma.user.findMany({
       where: whereClause,
