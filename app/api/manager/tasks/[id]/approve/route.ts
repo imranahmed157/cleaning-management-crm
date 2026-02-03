@@ -139,7 +139,7 @@ export async function POST(
 
     if (!client) {
       // Fetch customer details from Stripe to get real email/name
-      let customerEmail = `stripe_${guestStripeId.substring(guestStripeId.length - 8)}@temp.placeholder`
+      let customerEmail = `stripe_${guestStripeId.substring(guestStripeId.length - 8)}@example.com`
       let customerName = guestName || 'Unknown Guest'
       
       try {
@@ -150,7 +150,7 @@ export async function POST(
           customerName = stripeCustomer.name || guestName || customerName
         }
       } catch (stripeError) {
-        console.warn('Could not fetch Stripe customer details:', stripeError)
+        console.warn('Could not fetch Stripe customer details:', stripeError instanceof Error ? stripeError.message : stripeError)
         // Fall back to provided guestName or default
       }
 
