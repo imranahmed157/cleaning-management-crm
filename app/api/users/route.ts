@@ -1,12 +1,13 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { Role } from '@prisma/client';
 
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const role = searchParams.get('role');
 
-    const whereClause = role ? { role } : {};
+    const whereClause = role ? { role: role as Role } : {};
 
     const users = await prisma.user.findMany({
       where: whereClause,

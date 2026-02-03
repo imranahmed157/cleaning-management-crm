@@ -20,6 +20,7 @@ export async function GET() {
           select: {
             name: true,
             email: true,
+            stripeCustomerId: true,
           },
         },
       },
@@ -60,10 +61,10 @@ export async function POST(request: Request) {
     const transaction = await prisma.transaction.create({
       data: {
         taskId: task.id,
-        guestyStripeId: '', // Will be filled when payment is processed
         cleanerId,
         managerId: manager!.id,
         clientId,
+        amount: guestCharge,
         guestCharge,
         cleanerFee,
         notes,
