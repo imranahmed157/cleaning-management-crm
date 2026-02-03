@@ -20,6 +20,7 @@ export async function GET() {
           select: {
             name: true,
             email: true,
+            stripeCustomerId: true,
           },
         },
       },

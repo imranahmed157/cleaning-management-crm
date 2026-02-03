@@ -16,6 +16,13 @@ export async function GET(request: Request) {
             propertyName: true,
           },
         },
+        client: {
+          select: {
+            name: true,
+            email: true,
+            stripeCustomerId: true,
+          },
+        },
       },
       orderBy: {
         createdAt: 'desc',

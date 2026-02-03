@@ -15,6 +15,7 @@ interface Transaction {
   client: {
     name: string;
     email: string;
+    stripeCustomerId: string | null;
   } | null;
   cleaner: {
     name: string;
