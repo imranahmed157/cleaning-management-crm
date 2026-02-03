@@ -59,8 +59,8 @@ export async function POST(request: Request) {
     // Create transaction
     const transaction = await prisma.transaction.create({
       data: {
+        amount: guestCharge,
         taskId: task.id,
-        guestyStripeId: '', // Will be filled when payment is processed
         cleanerId,
         managerId: manager!.id,
         clientId,
