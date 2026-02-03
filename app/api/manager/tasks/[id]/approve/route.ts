@@ -151,7 +151,7 @@ export async function POST(
     await prisma.task.update({
       where: { id: taskId },
       data: {
-        status: transactionStatus === 'APPROVED' ? 'APPROVED' : 'PENDING_REVIEW',
+        status: transactionStatus === 'APPROVED' ? 'APPROVED' : 'PENDING',
       },
     })
 
