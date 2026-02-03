@@ -135,8 +135,8 @@ export async function POST(
     // Create transaction record
     const transaction = await prisma.transaction.create({
       data: {
-        amount: guestCharge,
         taskId: task.id,
+        guestStripeId,
         guestName: guestName || 'Unknown',
         cleanerId: task.cleaner.id,
         managerId: session.user.id,
