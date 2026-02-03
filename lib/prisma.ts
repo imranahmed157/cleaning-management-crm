@@ -11,4 +11,4 @@ export const prisma =
     log: ['query'],
   }).$extends(withAccelerate())
 
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
+if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma as any

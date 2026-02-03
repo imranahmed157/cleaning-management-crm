@@ -132,9 +132,7 @@ const { data: session } = useSession();
       const res = await fetch('/api/transactions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-          clientId: chargeForm.clientId,
-  amount,
-  description: chargeForm.description,body: JSON.stringify({
+        body: JSON.stringify({
           ...formData,
           amount: parseFloat(formData.amount),
         }),
@@ -220,7 +218,7 @@ const { data: session } = useSession();
           cleanerId: chargeForm.cleanerId || null,
           cleanerPayout,
           platformFeeType: chargeForm.platformFeeType,
-managerEmail: session?.user?.email,
+          managerEmail: session?.user?.email,
         }),
       });
 
